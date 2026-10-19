@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gara An Phát – Quản lý gara (demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF1F4;--panel:#fff;--ink:#17212B;--mut:#5B6877;--line:#D9DFE6;--acc:#1D6FA5;--accT:#fff;--ok:#2E7D4F;--warn:#B7620B;--bad:#B3261E;--side:#17212B;--sideT:#C9D3DD;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F151B;--panel:#18212A;--ink:#E7ECF1;--mut:#93A1B0;--line:#2A3541;--acc:#4FA3DB;--accT:#0F151B;--ok:#5CC48A;--warn:#E8A04A;--bad:#F08A82;--side:#0A0F14}}
+:root[data-theme="dark"]{--bg:#0F151B;--panel:#18212A;--ink:#E7ECF1;--mut:#93A1B0;--line:#2A3541;--acc:#4FA3DB;--accT:#0F151B;--ok:#5CC48A;--warn:#E8A04A;--bad:#F08A82;--side:#0A0F14}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:15px/1.5 "Be Vietnam Pro",system-ui,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);background-color:var(--bg)}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--sideT);padding:20px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+aside h1{font-size:18px;color:#fff;margin:0 8px 2px}aside .sub{margin:0 8px 18px;font-size:13px;opacity:.7}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:10px 12px;border-radius:6px;cursor:pointer}
+nav button:hover{background:rgba(255,255,255,.07)}nav button.on{background:var(--acc);color:var(--accT);font-weight:500}
+.role{margin:20px 8px 0;font-size:13px}.role select{width:100%;margin-top:4px}
+main{padding:24px;min-width:0}
+h2{margin:0 0 16px;font-size:22px}h3{margin:0 0 10px;font-size:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.stat b{display:block;font-size:26px;font-weight:700}.stat span{color:var(--mut);font-size:13px}
+.kan{display:grid;grid-template-columns:repeat(4,minmax(200px,1fr));gap:12px;overflow-x:auto}
+.col{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;min-height:200px}
+.col h3{font-size:14px;display:flex;justify-content:space-between}
+.job{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:8px;cursor:pointer}
+.plate{font-weight:700;letter-spacing:.5px;border:2px solid var(--ink);border-radius:4px;padding:0 6px;display:inline-block;font-size:13px}
+.job p{margin:6px 0;font-size:13px;color:var(--mut)}
+button.b,a.b{background:var(--acc);color:var(--accT);border:0;border-radius:6px;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+button.b.g{background:none;color:var(--acc);border:1px solid var(--acc)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input,select,textarea{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:100%}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:10px}label input,label select,label textarea{margin-top:3px;color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:500}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid currentColor;display:inline-block}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.mut{color:var(--mut)}
+.bars{display:flex;align-items:flex-end;gap:10px;height:180px;padding-top:10px}
+.bars div{flex:1;text-align:center;font-size:12px;color:var(--mut)}.bars i{display:block;background:var(--acc);border-radius:4px 4px 0 0;margin-bottom:4px}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:min(560px,94vw);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+#toast.s{opacity:1}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{position:static;height:auto}nav{display:flex;flex-wrap:wrap;gap:4px}nav button{width:auto}.row2{grid-template-columns:1fr}main{padding:14px}}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <h1>Gara An Phát</h1><p class="sub">Bản demo quản lý gara</p>
+ <nav id="nav"></nav>
+ <label class="role" style="color:var(--sideT)">Đăng nhập với vai trò
+  <select id="role" onchange="setRole(this.value)">
+   <option value="chu">Chủ gara</option><option value="cv">Cố vấn dịch vụ</option><option value="kt">Kỹ thuật viên</option><option value="kho">Thủ kho</option><option value="ketoan">Kế toán</option>
+  </select></label>
+</aside>
+<main id="main"></main>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s);
+const money=n=>Math.round(n).toLocaleString('vi-VN')+' ₫';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STAT={cho:'Chờ sửa',sua:'Đang sửa',kt:'Kiểm tra',xong:'Chờ thanh toán',giao:'Đã giao'};
+const FLOW=['cho','sua','kt','xong'];
+const TABS={tong:['Tổng quan','chu,cv,kt,kho,ketoan'],tn:['Tiếp nhận xe','chu,cv'],lenh:['Lệnh sửa chữa','chu,cv,kt'],kho:['Kho phụ tùng','chu,kho'],lich:['Lịch hẹn và nhắc','chu,cv'],hd:['Hóa đơn','chu,cv,ketoan'],bc:['Báo cáo','chu,ketoan']};
+const TECH=['Thợ Hùng','Thợ Minh','Thợ Tâm'];
+let role='chu',tab='tong';
+let parts=[
+ {id:1,name:'Dầu nhớt 5W-30 (lít)',price:180000,stock:24,min:10},
+ {id:2,name:'Lọc dầu',price:120000,stock:6,min:8},
+ {id:3,name:'Má phanh trước',price:650000,stock:5,min:4},
+ {id:4,name:'Bugi (cái)',price:95000,stock:30,min:12},
+ {id:5,name:'Lọc gió động cơ',price:220000,stock:3,min:5},
+ {id:6,name:'Ắc quy 12V 60Ah',price:1850000,stock:4,min:2}];
+let services=[
+ {id:1,name:'Công thay dầu',price:100000},{id:2,name:'Công thay má phanh',price:300000},
+ {id:3,name:'Kiểm tra tổng quát',price:150000},{id:4,name:'Công thay bugi',price:200000},{id:5,name:'Công thay ắc quy',price:100000}];
+let orders=[
+ {id:101,plate:'43A-123.45',cust:'Nguyễn Văn An',phone:'0905123456',car:'Toyota Vios 2019',km:48200,issue:'Thay dầu, kiểm tra phanh',tech:'Thợ Hùng',st:'sua',items:[{t:'dv',id:1,q:1},{t:'pt',id:1,q:4}]},
+ {id:102,plate:'43A-678.90',cust:'Trần Thị Bình',phone:'0935777888',car:'Honda CR-V 2021',km:25100,issue:'Phanh kêu khi dừng',tech:'Thợ Minh',st:'cho',items:[]},
+ {id:103,plate:'43C-222.18',cust:'Lê Quốc Cường',phone:'0777999000',car:'Hyundai Accent 2018',km:72000,issue:'Bảo dưỡng 70.000 km',tech:'Thợ Tâm',st:'kt',items:[{t:'dv',id:3,q:1},{t:'pt',id:4,q:4}]},
+ {id:104,plate:'92A-555.66',cust:'Phạm Minh Đức',phone:'0914333222',car:'Mazda 3 2020',km:39800,issue:'Xe khó nổ buổi sáng',tech:'Thợ Hùng',st:'xong',items:[{t:'dv',id:5,q:1},{t:'pt',id:6,q:1}]}];
+let invoices=[],nextId=105;
+let appts=[{t:'2026-10-20T08:30',cust:'Võ Thanh Hải',plate:'43A-909.01',note:'Thay lốp, cân chỉnh'},{t:'2026-10-20T14:00',cust:'Đỗ Thu Hà',plate:'43B-300.77',note:'Bảo dưỡng 10.000 km'}];
+const pastRev=[8200000,11500000,9400000,13800000,10600000,15200000];
+const orderTotal=o=>o.items.reduce((s,i)=>s+(i.t==='dv'?services:parts).find(x=>x.id===i.id).price*i.q,0);
+const today=()=>invoices.reduce((s,i)=>s+i.total,0);
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('s');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('s'),2200)}
+function setRole(r){role=r;if(!TABS[tab][1].split(',').includes(r))tab=Object.keys(TABS).find(k=>TABS[k][1].split(',').includes(r));render()}
+function go(t){tab=t;render()}
+function render(){
+ $('#nav').innerHTML=Object.keys(TABS).filter(k=>TABS[k][1].split(',').includes(role)).map(k=>`<button class="${k===tab?'on':''}" onclick="go('${k}')">${TABS[k][0]}</button>`).join('');
+ $('#main').innerHTML=V[tab]();
+}
+const V={
+tong(){
+ const act=orders.filter(o=>o.st!=='giao'),low=parts.filter(p=>p.stock<=p.min);
+ return `<h2>Tổng quan hôm nay</h2><div class="grid g4">
+ <div class="card stat"><b>${act.length}</b><span>Xe đang trong gara</span></div>
+ <div class="card stat"><b>${orders.filter(o=>o.st==='xong').length}</b><span>Xe chờ thanh toán</span></div>
+ <div class="card stat"><b>${money(today())}</b><span>Doanh thu hôm nay</span></div>
+ <div class="card stat"><b class="${low.length?'warn':''}">${low.length}</b><span>Phụ tùng sắp hết</span></div></div>
+ <div class="card tw" style="margin-top:14px"><h3>Xe đang xử lý</h3><table><tr><th>Biển số</th><th>Khách</th><th>Xe</th><th>Yêu cầu</th><th>Trạng thái</th></tr>
+ ${act.map(o=>`<tr><td><span class="plate">${esc(o.plate)}</span></td><td>${esc(o.cust)}</td><td>${esc(o.car)}</td><td>${esc(o.issue)}</td><td>${STAT[o.st]}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">Chưa có xe nào. Vào “Tiếp nhận xe” để tạo phiếu.</td></tr>'}</table></div>`},
+tn(){
+ return `<h2>Tiếp nhận xe</h2><div class="grid g2"><form class="card" onsubmit="return addOrder(event)">
+ <h3>Phiếu tiếp nhận mới</h3>
+ <label>Biển số<input name="plate" required placeholder="43A-123.45" oninput="lookup(this.value)"></label>
+ <div class="row2"><label>Tên khách<input name="cust" required></label><label>Số điện thoại<input name="phone" required inputmode="tel"></label></div>
+ <div class="row2"><label>Hãng và đời xe<input name="car" required placeholder="Toyota Vios 2019"></label><label>Số km<input name="km" type="number" min="0" required></label></div>
+ <label>Yêu cầu của khách<textarea name="issue" rows="2" required></textarea></label>
+ <button class="b">Tạo phiếu và lệnh sửa chữa</button></form>
+ <div class="card"><h3>Lịch sử theo biển số</h3><div id="hist" class="mut">Nhập biển số để xem các lần sửa trước.</div></div></div>`},
+lenh(){
+ return `<h2>Lệnh sửa chữa</h2><p class="mut" style="margin-top:-8px">Bấm vào thẻ để thêm phụ tùng, công thợ.</p><div class="kan">`+FLOW.map(s=>{
+  const l=orders.filter(o=>o.st===s);
+  return `<div class="col"><h3>${STAT[s]} <span class="mut">${l.length}</span></h3>${l.map(o=>`<div class="job" onclick="openJob(${o.id})"><span class="plate">${esc(o.plate)}</span><p>${esc(o.car)}<br>${esc(o.issue)}</p><span class="mut" style="font-size:12px">${esc(o.tech)}</span></div>`).join('')}</div>`}).join('')+`</div>`},
+kho(){
+ return `<h2>Kho phụ tùng</h2><div class="card tw"><table><tr><th>Phụ tùng</th><th>Giá bán</th><th>Tồn</th><th>Mức tối thiểu</th><th></th><th></th></tr>
+ ${parts.map(p=>`<tr><td>${p.name}</td><td>${money(p.price)}</td><td><b>${p.stock}</b></td><td>${p.min}</td><td>${p.stock<=p.min?'<span class="tag warn">Sắp hết</span>':'<span class="tag ok">Đủ</span>'}</td><td><button class="b g" onclick="restock(${p.id})">Nhập thêm 10</button></td></tr>`).join('')}</table></div>`},
+hd(){
+ const w=orders.filter(o=>o.st==='xong');
+ return `<h2>Báo giá và hóa đơn</h2><div class="card tw"><h3>Chờ thanh toán</h3><table><tr><th>Biển số</th><th>Khách</th><th>Tạm tính</th><th></th></tr>
+ ${w.map(o=>`<tr><td><span class="plate">${esc(o.plate)}</span></td><td>${esc(o.cust)}</td><td>${money(orderTotal(o))}</td><td><button class="b" onclick="openInv(${o.id})">Lập hóa đơn</button></td></tr>`).join('')||'<tr><td colspan="4" class="mut">Không có xe nào chờ thanh toán.</td></tr>'}</table></div>
+ <div class="card tw" style="margin-top:14px"><h3>Hóa đơn đã lập hôm nay</h3><table><tr><th>Số</th><th>Biển số</th><th>VAT</th><th>Tổng</th><th>Hình thức</th></tr>
+ ${invoices.map(i=>`<tr><td>HD${i.id}</td><td>${esc(i.plate)}</td><td>${i.vat}%</td><td>${money(i.total)}</td><td>${i.pay}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">Chưa có hóa đơn.</td></tr>'}</table></div>`},
+bc(){
+ const vals=[...pastRev,today()],mx=Math.max(...vals,1),d=new Date();
+ const lab=vals.map((_,i)=>{const x=new Date(d);x.setDate(d.getDate()-(6-i));return x.getDate()+'/'+(x.getMonth()+1)});
+ const sold={};orders.forEach(o=>o.items.forEach(i=>{const n=(i.t==='dv'?services:parts).find(x=>x.id===i.id).name;sold[n]=(sold[n]||0)+i.q}));
+ const top=Object.entries(sold).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ return `<h2>Báo cáo doanh thu</h2><div class="card"><h3>7 ngày gần nhất</h3><div class="bars">${vals.map((v,i)=>`<div><span>${(v/1e6).toFixed(1)}tr</span><i style="height:${Math.max(4,v/mx*130)}px"></i>${lab[i]}</div>`).join('')}</div></div>
+ <div class="card tw" style="margin-top:14px"><h3>Hạng mục dùng nhiều nhất</h3><table>${top.map(t=>`<tr><td>${t[0]}</td><td>${t[1]} lần</td></tr>`).join('')||'<tr><td class="mut">Chưa có dữ liệu.</td></tr>'}</table></div>`}
+};
+function lookup(v){
+ const h=orders.filter(o=>o.plate.toLowerCase()===v.trim().toLowerCase());
+ $('#hist').innerHTML=!v.trim()?'Nhập biển số để xem các lần sửa trước.':h.length?h.map(o=>`<p><span class="plate">${esc(o.plate)}</span> ${esc(o.cust)} · ${esc(o.km)} km<br>${esc(o.issue)} (${STAT[o.st]})</p>`).join(''):'Xe mới, chưa có lịch sử.';
+ if(h.length){const f=document.forms[0];if(f&&!f.cust.value){f.cust.value=h[0].cust;f.phone.value=h[0].phone;f.car.value=h[0].car}}
+}
+function addOrder(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+ orders.push({id:nextId++,plate:f.plate.trim().toUpperCase(),cust:f.cust,phone:f.phone,car:f.car,km:+f.km,issue:f.issue,tech:TECH[nextId%3],st:'cho',items:[]});
+ toast('Đã tạo lệnh sửa chữa cho '+f.plate.toUpperCase());tab='lenh';render();return false}
+function restock(id){parts.find(p=>p.id===id).stock+=10;toast('Đã nhập thêm 10');render()}
+function openJob(id){
+ const o=orders.find(x=>x.id===id),i=FLOW.indexOf(o.st),canEdit=role!=='kho';
+ const lines=o.items.map(it=>{const x=(it.t==='dv'?services:parts).find(y=>y.id===it.id);return `<tr><td>${x.name}</td><td>${it.q}</td><td>${money(x.price*it.q)}</td></tr>`}).join('')||'<tr><td colspan="3" class="mut">Chưa có hạng mục nào.</td></tr>';
+ $('#dlg').innerHTML=`<h3><span class="plate">${esc(o.plate)}</span> ${esc(o.cust)}</h3><p class="mut">${esc(o.car)} · ${o.km} km · ${esc(o.phone)}<br>Yêu cầu: ${esc(o.issue)}</p>
+ <label>Kỹ thuật viên<select onchange="orders.find(x=>x.id==${id}).tech=this.value">${TECH.map(t=>`<option ${t===o.tech?'selected':''}>${t}</option>`).join('')}</select></label>
+ <div class="tw"><table><tr><th>Hạng mục</th><th>SL</th><th>Thành tiền</th></tr>${lines}<tr><td colspan="2"><b>Tạm tính</b></td><td><b>${money(orderTotal(o))}</b></td></tr></table></div>
+ ${canEdit?`<div class="row2" style="margin-top:10px"><select id="addsv"><option value="">+ Thêm công thợ</option>${services.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+ <select id="addpt"><option value="">+ Thêm phụ tùng (tự trừ kho)</option>${parts.map(p=>`<option value="${p.id}" ${p.stock<1?'disabled':''}>${p.name} (còn ${p.stock})</option>`).join('')}</select></div>`:''}
+ <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="b g" onclick="$('#dlg').close()">Đóng</button>
+ ${i<3?`<button class="b" onclick="advance(${id})">Chuyển sang: ${STAT[FLOW[i+1]]}</button>`:''}</div>`;
+ $('#dlg').showModal();
+ const a=$('#addsv'),b=$('#addpt');
+ if(a)a.onchange=()=>{if(a.value){add(o,'dv',+a.value)}};
+ if(b)b.onchange=()=>{if(b.value){add(o,'pt',+b.value)}};
+}
+function add(o,t,id){
+ if(t==='pt'){const p=parts.find(x=>x.id===id);if(p.stock<1)return toast('Phụ tùng đã hết hàng');p.stock--;if(p.stock<=p.min)toast('Cảnh báo: '+p.name+' sắp hết')}
+ const ex=o.items.find(i=>i.t===t&&i.id===id);ex?ex.q++:o.items.push({t,id,q:1});openJob(o.id);render()}
+function advance(id){const o=orders.find(x=>x.id===id);o.st=FLOW[FLOW.indexOf(o.st)+1];$('#dlg').close();toast('Chuyển sang: '+STAT[o.st]);render()}
+function openInv(id){
+ const o=orders.find(x=>x.id===id),sub=orderTotal(o);
+ $('#dlg').innerHTML=`<h3>Hóa đơn – ${esc(o.plate)}</h3><p class="mut">${esc(o.cust)} · ${esc(o.car)}</p>
+ <p>Tạm tính: <b>${money(sub)}</b></p>
+ <div class="row2"><label>Thuế VAT<select id="vat"><option>8</option><option>10</option></select></label>
+ <label>Thanh toán<select id="pay"><option>Tiền mặt</option><option>Chuyển khoản</option></select></label></div>
+ <p class="mut" style="font-size:13px">Mức VAT và hóa đơn điện tử: cần xác minh với kế toán hoặc cơ quan thuế trước khi dùng thật.</p>
+ <div style="display:flex;gap:8px;justify-content:flex-end"><button class="b g" onclick="$('#dlg').close()">Hủy</button><button class="b" onclick="makeInv(${id})">Xuất hóa đơn</button></div>`;
+ $('#dlg').showModal()}
+function makeInv(id){
+ const o=orders.find(x=>x.id===id),vat=+$('#vat').value,sub=orderTotal(o);
+ invoices.push({id:invoices.length+1,plate:o.plate,vat,total:sub*(1+vat/100),pay:$('#pay').value});
+ o.st='giao';$('#dlg').close();toast('Đã xuất hóa đơn HD'+invoices.length);render()}
+V.lich=()=>{
+ const l=[...appts].sort((a,b)=>a.t<b.t?-1:1),seen={};
+ const rem=orders.filter(o=>!seen[o.plate]&&(seen[o.plate]=1)).map(o=>({o,next:Math.ceil((o.km+1)/5000)*5000}));
+ return `<h2>Lịch hẹn và nhắc bảo dưỡng</h2><div class="grid g2"><div class="card"><h3>Đặt lịch hẹn</h3><form onsubmit="return addAppt(event)">
+ <div class="row2"><label>Khách<input name="cust" required></label><label>Biển số<input name="plate" required></label></div>
+ <div class="row2"><label>Giờ hẹn<input name="t" type="datetime-local" required></label><label>Nội dung<input name="note" required></label></div>
+ <button class="b">Đặt lịch</button></form>
+ <div class="tw" style="margin-top:12px"><table><tr><th>Giờ hẹn</th><th>Khách</th><th>Biển số</th><th>Nội dung</th></tr>${l.map(a=>`<tr><td>${a.t.replace('T',' ')}</td><td>${esc(a.cust)}</td><td><span class="plate">${esc(a.plate)}</span></td><td>${esc(a.note)}</td></tr>`).join('')}</table></div></div>
+ <div class="card tw"><h3>Nhắc bảo dưỡng theo số km</h3><p class="mut" style="margin-top:-6px">Mỗi 5.000 km. Còn dưới 1.000 km là sắp đến hạn.</p><table><tr><th>Biển số</th><th>Km hiện tại</th><th>Mốc tới</th><th></th></tr>${rem.map(r=>{const left=r.next-r.o.km;return `<tr><td><span class="plate">${esc(r.o.plate)}</span></td><td>${r.o.km.toLocaleString('vi-VN')}</td><td>${r.next.toLocaleString('vi-VN')} <span class="tag ${left<=1000?'warn':'ok'}">${left<=1000?'Sắp đến hạn':'Còn '+left+' km'}</span></td><td><button class="b g" onclick="toast('Đã soạn tin nhắc cho '+${JSON.stringify('').length?'this.dataset.p':''})" data-p="${esc(r.o.plate)}">Soạn tin nhắc</button></td></tr>`}).join('')}</table></div></div>`};
+function addAppt(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));appts.push({t:f.t,cust:f.cust,plate:f.plate.toUpperCase(),note:f.note});toast('Đã đặt lịch hẹn');render();return false}
+render();
+</script>
+</body>
+</html>
